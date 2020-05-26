@@ -12,7 +12,7 @@ if(POLICY CMP0077)
 endif()
 
 option(IMGUI_SFML_BUILD_EXAMPLES "Build ImGui_SFML examples" OFF)
-option(IMGUI_SFML_FIND_SFML "Use find_package to find SFML" ON)
+option(IMGUI_SFML_FIND_SFML "Use find_package to find SFML" OFF)
 
 # If you want to use your own user config when compiling ImGui, please set the following variables
 # For example, if you have your config in /path/to/dir/with/config/myconfig.h, set the variables as follows:
@@ -35,34 +35,27 @@ if (IMGUI_SFML_FIND_SFML)
 	if (NOT BUILD_SHARED_LIBS)
 		set(SFML_STATIC_LIBRARIES ON)
 	endif()
-	find_package(SFML 2.5 COMPONENTS graphics system window)
+	find_package(SFML COMPONENTS graphics system window)
 
 	if(NOT SFML_FOUND)
     message(FATAL_ERROR "SFML 2 directory not found. Set SFML_DIR to directory where SFML was built (or one which ccontains SFMLConfig.cmake)")
 	endif()
 endif()
 
-# ImGui does not provide native support for CMakeLists, workaround for now to have
-# users specify IMGUI_DIR. Waiting for this PR to get merged...
-#    https://github.com/ocornut/imgui/pull/1713
-if(NOT IMGUI_DIR)
-  set(IMGUI_DIR "" CACHE PATH "imgui top-level directory")
-  message(FATAL_ERROR "ImGui directory not found. Set IMGUI_DIR to imgui's top-level path (containing 'imgui.h' and other files).\n")
-endif()
-
+find_package ( SFML COMPONENTS graphics system window)
 # This uses FindImGui.cmake provided in ImGui-SFML repo for now
-find_package(ImGui 1.68 REQUIRED)
+#find_package(ImGui 1.68 REQUIRED)
 
 # these headers will be installed alongside ImGui-SFML
-set(IMGUI_PUBLIC_HEADERS
-  ${IMGUI_INCLUDE_DIR}/imconfig.h
-  ${IMGUI_INCLUDE_DIR}/imgui.h
-  ${IMGUI_INCLUDE_DIR}/imgui_internal.h # not actually public, but users might need it
-  ${IMGUI_INCLUDE_DIR}/imstb_rectpack.h
-  ${IMGUI_INCLUDE_DIR}/imstb_textedit.h
-  ${IMGUI_INCLUDE_DIR}/imstb_truetype.h
-  ${IMGUI_INCLUDE_DIR}/misc/cpp/imgui_stdlib.h
-)
+#set(IMGUI_PUBLIC_HEADERS
+#  ${IMGUI_INCLUDE_DIR}/imconfig.h
+#  ${IMGUI_INCLUDE_DIR}/imgui.h
+#  ${IMGUI_INCLUDE_DIR}/imgui_internal.h # not actually public, but users might need it
+#  ${IMGUI_INCLUDE_DIR}/imstb_rectpack.h
+#  ${IMGUI_INCLUDE_DIR}/imstb_textedit.h
+#  ${IMGUI_INCLUDE_DIR}/imstb_truetype.h
+#  ${IMGUI_INCLUDE_DIR}/misc/cpp/imgui_stdlib.h
+#)
 
 # CMake 3.11 and later prefer to choose GLVND, but we choose legacy OpenGL just because it's safer
 # (unless the OpenGL_GL_PREFERENCE was explicitly set)
@@ -75,8 +68,11 @@ find_package(OpenGL REQUIRED)
 
 add_library(ImGui-SFML
   imgui-SFML.cpp
-  ${IMGUI_SOURCES}
+  #${IMGUI_SOURCES}
 )
+include ( cmake/dependency.cmake ) 
+set_dependency( ImGui-SFML PRIVATE )
+
 
 # Add pretty alias
 add_library(ImGui-SFML::ImGui-SFML ALIAS ImGui-SFML)
@@ -152,16 +148,16 @@ if(IMGUI_SFML_BUILD_EXAMPLES)
 endif()
 
 # installation rules
-install(TARGETS ImGui-SFML
-  EXPORT ImGui-SFML
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(EXPORT ImGui-SFML
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ImGui-SFML
-  NAMESPACE ImGui-SFML::
-  FILE ImGui-SFMLConfig.cmake
-)
+#install(TARGETS ImGui-SFML
+#  EXPORT ImGui-SFML
+#  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#)
+#
+#install(EXPORT ImGui-SFML
+#  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ImGui-SFML
+#  NAMESPACE ImGui-SFML::
+#  FILE ImGui-SFMLConfig.cmake
+#)
