@@ -29,4 +29,4 @@
             static_cast<sf::Uint8>(w * 255.f));                         \
     }
 
-#define ImTextureID unsigned int
+//#define ImTextureID unsigned int

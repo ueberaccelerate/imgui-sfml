@@ -8,6 +8,6 @@ CPMAddPackage(
 
 function (set_dependency target_name target_type ) 
 
-target_link_libraries( ${target_name} ${target_type} imgui )
+  target_link_libraries( ${target_name} PUBLIC imgui )
 
 endfunction()
